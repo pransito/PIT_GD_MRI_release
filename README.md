@@ -1,4 +1,4 @@
-R Code for the PIT Gambling Disorder paper (behavioral data)
+R Code for the PIT Gambling Disorder paper (MRI data)
 -----------------------------------------------------------
 
 Code for publication of "Neural correlates of cue-induced changes in decision-making distinguish subjects with gambling disorder from healthy controls"

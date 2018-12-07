@@ -22,10 +22,11 @@ The machine learning part is started with the script "R/analyses/01_classificati
 
 3)
 The classical group analysis part using hierarchical regression (lme4) is  with the
-"/02_classical_group_analyses/glmer_accRate_la_cat_v3.R script"; Before running it, make sure to run "R/select_study.R" first with which_study set to "POSTPILOT_HCPG". It is set such that the glmer models are run (10 to 20 minutes) but the confidence intervals for the fixed effects of beta_gain, beta_loss and loss aversion per group are just loaded; running it takes about an hour or longer; 
+"/02_classical_group_analyses/glmer_accRate_la_cat_v3.R script"; Before running it, make sure to run "R/select_study.R" first with which_study set to "MRI". It is set such that the glmer models are run (10 to 20 minutes) and compared according to main text and supplements
+a plot is generated showing the shifts in acceptance rate according to cue category
 
 4)
-Making the ratings graph. It is automatically produced when running "group_pred_loop_v7.R". 
+Making the ratisoduced when running "group_pred_loop_v7.R". 
 
 5)
 Ratings: statistical tests. Run the script "R/analyses/03_image_adequacy/ratings_analysis_for_paper.R". Check the instructions at the top of the script.

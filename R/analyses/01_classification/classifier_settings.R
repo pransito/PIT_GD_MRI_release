@@ -8,20 +8,20 @@
 
 ## WHAT TO RUN ================================================================
 # MRI (saved under prefix "phys" in results)
-outer_cv_addfeaton      = F # Ha only, i.e. physio/MRI  (with cross-validation)
-noout_cv_addfeaton      = F # to get the complete model (no cross-validation)
+outer_cv_addfeaton      = T # Ha only, i.e. physio/MRI  (with cross-validation)
+noout_cv_addfeaton      = T # to get the complete model (no cross-validation)
 
 # control model
-outer_cv_c_model        = F # control model/null-model for classification; predict with covariate only
+outer_cv_c_model        = T # control model/null-model for classification; predict with covariate only
 
 # what to report
-do_report               = T
-do_report_feat_only     = T
+do_report               = F
+do_report_feat_only     = F
 
 # number of runs to get the CV results distribution, >=1000 recommended
 # runs also will be the name of the results folder
 # 1000: fMRI predictors
-runs = 1000
+runs = 1
 
 # advanced settings for other studies =========================================
 # leave this section as is

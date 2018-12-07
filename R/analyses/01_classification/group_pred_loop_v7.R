@@ -15,7 +15,7 @@
 
 # author: Alexander Genauck
 # email:  alexander.genauck@charite.de
-# date:   09.11.2018
+# date:   07.12.2018
 
 # PREPARATION FOR FOREIGN RUN =================================================
 setwd(paste0(root_wd,'/01_classification'))

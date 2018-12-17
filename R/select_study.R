@@ -23,8 +23,7 @@ data_pdt_inv = data_pdt
 ## PARAMETER SETTINGS =========================================================
 # which study to look at (Cohorts)? ===========================================
 which_study = "MRI"
-#which_study = "MRI_and_POSTPILOT" # lumping those together (for KFG prediction e.g.)
-#which_study = "POSTPILOT_HCPG" # CAREFUL: had different set of neutral pictures (?!?!)
+#which_study = "POSTPILOT_HCPG"
 
 
 # default data_inv

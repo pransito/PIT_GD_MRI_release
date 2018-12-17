@@ -31,5 +31,8 @@ Making the ratisoduced when running "group_pred_loop_v7.R".
 5)
 Ratings: statistical tests. Run the script "R/analyses/03_image_adequacy/ratings_analysis_for_paper.R". Check the instructions at the top of the script.
 
+6)
+The Matlab folder holds information on the sequences used for functional magnetic resonance imaging and also the SPM12 batch for preprocessing and the single subject model.
+
 
 Enjoy! Any questions, or bugs please send by raising an issue in this GitHub repository.

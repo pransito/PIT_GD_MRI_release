@@ -10,6 +10,23 @@ agk.load.ifnot.install('multcomp')
 agk.load.ifnot.install('nloptr')
 agk.load.ifnot.install('pracma')
 
+## include variable that states how often picture was presented ===============
+data_pdt$stim_rep = 0
+all_subs          = unique(data_pdt$subject)
+all_dp            = list()
+for (ss in 1:length(all_subs)) {
+  cur_sub                                = all_subs[ss]
+  cur_dat                                = data_pdt[data_pdt$subject == cur_sub,]
+  cur_sr                                 = data.frame(table(cur_dat$stim))
+  cur_dat                                = merge(cur_dat,cur_sr,by.x = 'stim',by.y = 'Var1')
+  cur_dat$stim_rep                       = as.numeric(cur_dat$Freq)
+  cur_dat$Freq                           = NULL
+  all_dp[[ss]]                           = cur_dat
+}
+new_data_pdt = bind_rows(all_dp)
+data_pdt     = new_data_pdt
+rm(list      = c('new_data_pdt'))
+
 ## PUT DATA_PDT in safe-keeping ===============================================
 data_pdt_ra_bcp = data_pdt
 
@@ -17,7 +34,7 @@ data_pdt_ra_bcp = data_pdt
 which_group           = 'both'
 pic_value_vars        = c("arousal","dominance","valence","imageRating1s",
                           "imageRating2s","imageRating3s","imageRating4s")
-pic_value_vars_labels = c('Valence', 'Arousal','Dominance', "Elicits_Craving",
+pic_value_vars_labels = c("Arousal","Dominance","Valence", "Elicits_Craving",
                           "Representative_for_Gambles","Representative_for_Negative","Representative_for_Positive")
 cur_control           = lmerControl(optimizer = "nloptwrap", calc.derivs = FALSE)
 
@@ -59,31 +76,50 @@ agk.lme.summary = function(model,type) {
   }
 }
 
-agk.estimate.models = function(des_var,cur_control) {
+agk.estimate.models = function(des_var,cur_control, which_group) {
   # des_var is a string that indicates the variable
   # you would like to do your tests on
   
   # define commands
   cmd_1 = paste0('mod0  = lmer(',des_var,' ~ 1 + (1| subject) + (1|stim),data = data_pdt,REML = F)')
   cmd_2 = paste0('modc  = lmer(',des_var,' ~ (0+cat) + (0+cat| subject) ,data = data_pdt, REML = F,control=cur_control)')
-  cmd_3 = paste0('modcg = lmer(',des_var,' ~ (0+cat)*HCPG + (0+cat| subject) ,data = data_pdt, REML = F,control=cur_control)')
-  
+  if (which_group == 'both') {
+    cmd_3 = paste0('modcg = lmer(',des_var,' ~ (0+cat)*HCPG + (0+cat| subject) ,data = data_pdt, REML = F,control=cur_control)')
+    cmd_4 = paste0('modcgr = lmer(',des_var,' ~ (0+cat*stim_rep)*HCPG + (0+cat*stim_rep| subject) ,data = data_pdt, REML = F,control=cur_control)')
+  } else {
+    cmd_3 = paste0('modcr = lmer(',des_var,' ~ (0+cat*stim_rep) + (0+cat*stim_rep| subject) ,data = data_pdt, REML = F,control=cur_control)')
+  }
+
   # evaluate commands
   eval(parse(text = cmd_1))
   eval(parse(text = cmd_2))
-  eval(parse(text = cmd_3))
+  if (which_group == 'both') {
+    eval(parse(text = cmd_3))
+    eval(parse(text = cmd_4))
+  } else {
+    eval(parse(text = cmd_3))
+  }
   
   # return
-  return(list(mod0 = mod0,modc = modc,modcg = modcg))
+  if (which_group == 'both') {
+    return(list(mod0 = mod0,modc = modc,modcg = modcg,modcgr = modcgr))
+  } else {
+    return(list(mod0 = mod0,modc = modc,modcr = modcr))
+  }
+
 } 
 
-agk.summarize.models = function(est_mods) {
+agk.summarize.models = function(est_mods, which_group) {
   # function that summarizes two lmer mods
   
   disp('####################')
   disp('# MODEL COMPARISON #')
   disp('####################')
-  print(anova(est_mods$mod0,est_mods$modc,est_mods$modcg))
+  if (which_group == 'both') {
+    print(anova(est_mods$mod0,est_mods$modc,est_mods$modcg,est_mods$modcgr))
+  } else {
+    print(anova(est_mods$mod0,est_mods$modc,est_mods$modcr))
+  }
   disp('')
   disp('####################')
   disp('# MODEL MOD0       #')
@@ -94,10 +130,22 @@ agk.summarize.models = function(est_mods) {
   disp('# MODEL MODC       #')
   disp('####################')
   print(agk.lme.summary(est_mods$modc,type='norm'))
-  disp('####################')
-  disp('# MODEL MODCG      #')
-  disp('####################')
-  print(agk.lme.summary(est_mods$modcg,type='norm'))
+  if (which_group == 'both') {
+    disp('####################')
+    disp('# MODEL MODCG      #')
+    disp('####################')
+    print(agk.lme.summary(est_mods$modcg,type='norm'))
+    disp('####################')
+    disp('# MODEL MODCGR     #')
+    disp('####################')
+    print(agk.lme.summary(est_mods$modcgr,type='norm'))
+  } else {
+    disp('####################')
+    disp('# MODEL MODCGR     #')
+    disp('####################')
+    print(agk.lme.summary(est_mods$modcr,type='norm'))
+  }
+
   
   disp('')
   disp('#########################')
@@ -125,7 +173,7 @@ if (any(c('HC','PG') %in% which_group)) {
 } else if(which_group == 'both') {
   # do both
 } else {
-  stop('Do not no this value of which_group.')
+  stop('Do not know this value of which_group.')
 }
 
 
@@ -159,7 +207,6 @@ for (ss in 1:length(all_subs)) {
 }
 data_pdt = data_pdt[data_pdt$subject %in% all_subs[sub_ok],]
 
-
 # get rid of double stimuli within subjects
 all_subs = unique(data_pdt$subject)
 cur_dat  = data_pdt[data_pdt$subject == all_subs[1],]
@@ -188,12 +235,13 @@ data_pdt = data_pdt[data_pdt$stim %in% all_stim[stim_ok],]
 
 
 ## TEST RATINGS HYPOTHESES ONE GROUP ==========================================
+res_list = list()
 for (dd in 1:length(pic_value_vars_labels)) {
   message(paste0('Univariate tests for the rating variable: ', pic_value_vars_labels[dd]))
-  des_var = pic_value_vars[dd]
-  res     = agk.estimate.models(des_var,cur_control)
-  sumres  = agk.summarize.models(res) 
+  des_var        = pic_value_vars[dd]
+  res_list[[dd]] = agk.estimate.models(des_var,cur_control,which_group)
+  agk.summarize.models(res_list[[dd]],which_group) 
 }
 
 ## DATA_PDT into initial state ================================================
-data_pdt_ra_bcp = data_pdt
+data_pdt = data_pdt_ra_bcp

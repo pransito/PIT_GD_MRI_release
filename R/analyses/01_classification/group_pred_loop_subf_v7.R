@@ -1,4 +1,4 @@
-agk.pred.group.CV = function(outer_CV,addfeat,add_cr_pp_fn,add_cr_ra_fn,des_seed,addfeat_only = F,c_mod=F) {
+agk.pred.group.CV = function(outer_CV,addfeat,add_cr_pp_fn,add_cr_ra_fn,des_seed,addfeat_only = F,c_mod=F, fm = fm) {
   # wrapper function to run the CV loop
   #
   # outer_CV: if yes then algorithm is cross-validated and all other CV is nested
@@ -78,7 +78,7 @@ agk.pred.group.CV = function(outer_CV,addfeat,add_cr_pp_fn,add_cr_ra_fn,des_seed
   pb = curpbfun(title = cur_title, min = 0,max = runs, width = box_width)
   
   # get into wd
-  setwd("01_classification/")
+  setwd('01_classification/')
   
   ## run the loop for (outer) CV
   for(hh in 1:runs) {
@@ -107,6 +107,17 @@ agk.pred.group.CV = function(outer_CV,addfeat,add_cr_pp_fn,add_cr_ra_fn,des_seed
       
     }
     curpbset(pb,hh, title=paste(cur_title, round(hh/runs*100),"% done"))
+    
+    # interim_save
+    cur_home = getwd()
+    setwd(path_res_classif)
+    dir.create(file.path(path_res_classif, paste0('results/',runs)),recursive=T)
+    setwd(file.path(path_res_classif, paste0('results/',runs)))
+    cur_var_list = c(ls(pattern = '^CV'),ls(pattern = '^list_winning_model'),ls(pattern = '^cur_mod_sel'),
+                     ls(pattern = 'fm'),ls(pattern = '^des_seed'))
+    save(file = paste0(which_study,'_predGrp_INTERIM_save',pred_grp,svfnm,'.RData'),
+         list = cur_var_list)
+    setwd(cur_home)
   }
   close(pb)
   

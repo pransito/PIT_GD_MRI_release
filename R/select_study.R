@@ -1,72 +1,66 @@
 ## PREAMBLE ===================================================================
-# script that selects from data_pdt and dat_match the data of desired study
-# the study (cohort) you need
-# run data_import.R before or load the .RData file (foreign run)
+# loads the .RData file with all pertaining data frames
+# selects from data_pdt and dat_match the data of desired study
 # will output data_pdt, dat_match to be used for further analysis
 
-# set to T, if you have this script from GitHub
-FOREIGN_RUN = T
-
 # PREPARATION FOR FOREIGN RUN =================================================
-if (FOREIGN_RUN) {
-  # root_wd needs to be the folder which holds the "PIT_GD_behav/R/analyses/"
-  rm(list=ls())
-  root_wd  = paste0(dirname(rstudioapi::getSourceEditorContext()$path),'/analyses/')
-  setwd(root_wd)
-  load('.RData')
-}
+# root_wd needs to be the folder which holds the "PIT_GD_behav/R/analyses/"
+rm(list=ls())
+root_wd  = paste0(dirname(rstudioapi::getSourceEditorContext()$path),'/analyses/')
+setwd(root_wd)
+load('.RData')
+
+# get the paths
+res      = agk.get.working.location()
+base_gd  = res$base_gd
+path_ghb = res$path_ghb
 
 # get the original data_pdt from data_import.R
 data_pdt     = data_pdt_bcp
 data_pdt_inv = data_pdt
 
+# results path
+setwd(root_wd)
+setwd('01_classification/')
+path_res_classif = getwd()
+
+# go to wd
+setwd(root_wd)
+
 ## PARAMETER SETTINGS =========================================================
-# which study to look at (Cohorts)? ===========================================
+# which study to look at (Cohorts)?
 which_study = "MRI"
-#which_study = "POSTPILOT_HCPG"
-
-
-# default data_inv
-if (which_study == 'MRI') {
-  do_data_inv = 0 
-} else {
-  do_data_inv = 0
-}
-
-# desired data_inv
-# use of cohort all subjects but that subject of the group to determine value
-# imageRating1s is craving
-do_data_inv      = 0
-data_pdt_inv_var = 'imageRating1s'
-
-## PREPARATIONS ===============================================================
-if (physio_sum_fun == 'mean') {
-  data_pdt$corr = data_pdt$corr_auc
-  data_pdt$eda  = data_pdt$eda_auc
-  data_pdt$zygo = data_pdt$zygo_auc
-} else if (physio_sum_fun == 'max') {
-  data_pdt$corr = data_pdt$corr_max
-  data_pdt$eda  = data_pdt$eda_max
-  data_pdt$zygo = data_pdt$zygo_max
-} else if (physio_sum_fun == 'median') {
-  data_pdt$corr = data_pdt$corr_median
-  data_pdt$eda  = data_pdt$eda_median
-  data_pdt$zygo = data_pdt$zygo_median
-} else if (physio_sum_fun == 'all') {
-  # do nothing
-  # here all of the stuff will be used
-} else {
-  stop('No proper physio_sum_fun provided.')
-}
 
 ## FUNCTIONS ==================================================================
-# why is this here?!?!?
+getmode <- function(v) {
+  # mode function
+  uniqv <- unique(v)
+  uniqv[which.max(tabulate(match(v, uniqv)))]
+}
+
 cur_summary_function = function(x) median(x, na.rm=TRUE)
 # needs the f.difftest function from the import_data file
 f = function(x) {
   tmp <- t.test(x)
   return(as.matrix(c(tmp$p.value,mean(x,na.rm = T))))
+}
+
+agk.load.ifnot.install <- function(package_name){
+  if(require(package_name,character.only = T,quietly = T)){
+    print(paste (package_name,"is loaded correctly"))
+  } else {
+    print(paste("trying to install", package_name))
+    install.packages(pkgs = c(package_name))
+    if(require(package_name,character.only = T)){
+      print(paste(package_name,"installed and loaded"))
+    } else {
+      stop(paste("could not install",package_name))
+    }
   }
+}
+
+## PACKAGES ===================================================================
+agk.load.ifnot.install('reshape2')
 
 ## SUBSETTING DATA ============================================================
 data_pdt$Cohort[data_pdt$Cohort ==  "PhysioIAPS"] = "sanity"
@@ -113,29 +107,23 @@ if ((length(grep(which_study, pattern = "HC")) != 0) & (length(grep(which_study,
   data_pdt = subset(data_pdt,HCPG == "PG")
 }
 
-## DATA_INV ===================================================================
-# prepare a data_pdt_inv df (legacy)
-data_pdt_inv = data_pdt
-
 # CATEGORY LABELS =============================================================
-if (do_data_inv == 0) {
-  # Main effect of the final experimental categories: gam, pos, neg, neu_aw
-  data_pdt_finCat = data_pdt
-  if (which_study == "Prestudy") {
-    data_pdt_finCat$cat = agk.recode.c(as.character(data_pdt_finCat$cat),c("1","2","3"),c("1","2","3"))
-    data_pdt_finCat$cat = factor(as.numeric(as.character(data_pdt_finCat$cat)),levels = c(1,2,3),
-                                 labels = c('gambling','negative', 'positive')) ## CAREFUL: I TOOK OUT ALL NEUTRAL PICTURES HERE!
-  } else if (which_study == "sanity") {
-    data_pdt_finCat$cat = factor(as.numeric(as.character(data_pdt_finCat$cat)),levels = c(6,2,3,7,8),
-                                 labels = c('neutral_IAPS','negative_VPPG', 'positive_VPPG','negative_IAPS','positive_IAPS'))
-  } else if (which_study == "POSTPILOT_PG" | which_study == "POSTPILOT_PGxGENDER" | 
-             which_study == "POSTPILOT_HC" | which_study == "MRI_HC" | 
-             which_study == "MRI_PG" | which_study == "POSTPILOT_HCPG" | 
-             which_study == "MRI" | which_study == "MRI_and_POSTPILOT" |
-             which_study == "TEST") {
-    data_pdt_finCat$cat = factor(as.numeric(as.character(data_pdt_finCat$cat)),levels = c(6,1,2,3),
-                                 labels = c('neutral','gambling','negative', 'positive'))
-  }
+# Main effect of the final experimental categories: gam, pos, neg, neu_aw
+data_pdt_finCat = data_pdt
+if (which_study == "Prestudy") {
+  data_pdt_finCat$cat = agk.recode.c(as.character(data_pdt_finCat$cat),c("1","2","3"),c("1","2","3"))
+  data_pdt_finCat$cat = factor(as.numeric(as.character(data_pdt_finCat$cat)),levels = c(1,2,3),
+                               labels = c('gambling','negative', 'positive')) ## CAREFUL: I TOOK OUT ALL NEUTRAL PICTURES HERE!
+} else if (which_study == "sanity") {
+  data_pdt_finCat$cat = factor(as.numeric(as.character(data_pdt_finCat$cat)),levels = c(6,2,3,7,8),
+                               labels = c('neutral_IAPS','negative_VPPG', 'positive_VPPG','negative_IAPS','positive_IAPS'))
+} else if (which_study == "POSTPILOT_PG" | which_study == "POSTPILOT_PGxGENDER" | 
+           which_study == "POSTPILOT_HC" | which_study == "MRI_HC" | 
+           which_study == "MRI_PG" | which_study == "POSTPILOT_HCPG" | 
+           which_study == "MRI" | which_study == "MRI_and_POSTPILOT" |
+           which_study == "TEST") {
+  data_pdt_finCat$cat = factor(as.numeric(as.character(data_pdt_finCat$cat)),levels = c(6,1,2,3),
+                               labels = c('neutral','gambling','negative', 'positive'))
 }
 
 if(sum(is.na(data_pdt$cat))) {
@@ -143,13 +131,12 @@ if(sum(is.na(data_pdt$cat))) {
 }
 
 ## VARIABLE TRANSFORMATIONS ===================================================
-if (do_data_inv == 0) {
-  data_pdt_finCat$valence_log       = get.log(data_pdt_finCat$valence)
-  data_pdt_finCat$imageRating2s_log = get.log.base(data_pdt_finCat$imageRating2s,10)
-  data_pdt_finCat$imageRating1s_log = get.log(data_pdt_finCat$imageRating1s)
-  data_pdt_finCat$imageRating4s_log = get.log(data_pdt_finCat$imageRating4s)
-  data_pdt_finCat$imageRating3s_log = get.log(data_pdt_finCat$imageRating3s)
-}
+data_pdt_finCat$valence_log       = get.log(data_pdt_finCat$valence)
+data_pdt_finCat$imageRating2s_log = get.log.base(data_pdt_finCat$imageRating2s,10)
+data_pdt_finCat$imageRating1s_log = get.log(data_pdt_finCat$imageRating1s)
+data_pdt_finCat$imageRating4s_log = get.log(data_pdt_finCat$imageRating4s)
+data_pdt_finCat$imageRating3s_log = get.log(data_pdt_finCat$imageRating3s)
+
 
 ## GET CAT LABELS AND TRANSFORMATIONS INTO DATA_PDT ===========================
 # DO THIS BFORE STARTING ANY ANALYSIS OF BEHAVIORAL PDT TASK DATA
@@ -175,8 +162,15 @@ if (which_study == "POSTPILOT_HCPG" | which_study == "POSTPILOT_HC" |
 # or better yet, align
 dat_match = dat_match[dat_match$VPPG %in% data_pdt$subject,]
 
-## ADD CATEGORY VARIABLES FOR laCh ============================================
+## REPORTING ON MISSINGS AND THEN DROPPING ALL MISSINGS =======================
+missing_trials = xtabs(is.na(data_pdt$accept_reject) ~ data_pdt$subject + data_pdt$HCPG)
+missing_trials = melt(missing_trials)
+names(missing_trials) = c('subject','HCPG','num_missing')
+print(summary(lm(num_missing ~ HCPG,missing_trials)))
+
 data_pdt = data_pdt[!is.na(data_pdt$accept_reject),]
+
+## ADD CATEGORY VARIABLES FOR laCh ============================================
 all_subs = unique(data_pdt$subject)
 enh_dpdt = list()
 
@@ -238,17 +232,18 @@ do_report_no_added_feat   = 0
 do_report_with_added_feat = 0
 do_report_feat_only       = 0
 
+# Any reporting of p-values against null? Set to F if you do that in a separate script.
+report_CV_p = T
+
 if (which_study == 'MRI') {
   # Any reporting of p-values against null? Set to F if you do that in a separate script.
   report_CV_p = T
+  # master add cue reactivity: peripheral physiology or MRI; here: MRI
+  add_cr_pp_ma         = T
 } else {
-  # Any reporting of p-values against null? Set to F if you do that in a separate script.
-  report_CV_p = T
+  add_cr_pp_ma         = F
 }
 
-# no other features, only behavior
-# master add cue reactivity: peripheral physiology or MRI
-add_cr_pp_ma         = F
 # master add cue reactivity: ratings
 # should never be done, cause ratings are post-experiment
 add_cr_ra_ma         = F

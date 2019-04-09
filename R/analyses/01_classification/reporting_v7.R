@@ -557,6 +557,7 @@ if (which_study == 'MRI') {
   names(ci_res_shaped)[grep('mean',names(ci_res_shaped))] = paste0('regweight_',names(ci_res_shaped)[grep('mean',names(ci_res_shaped))])
   names(ci_res_shaped)[grep('lower',names(ci_res_shaped))] = paste0('regweight_',names(ci_res_shaped)[grep('lower',names(ci_res_shaped))])
   names(ci_res_shaped)[grep('upper',names(ci_res_shaped))] = paste0('regweight_',names(ci_res_shaped)[grep('upper',names(ci_res_shaped))])
+  ci_res_shaped$coef = gsub('years of education','years_in_school',ci_res_shaped$coef)
   all_t = merge(all_t,ci_res_shaped)
   
   # plot

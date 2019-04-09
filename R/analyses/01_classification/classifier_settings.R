@@ -8,19 +8,19 @@
 
 ## WHAT TO RUN ================================================================
 # only MRI features
-outer_cv_addfeaton = 1 # Ha only, i.e. MRI
-noout_cv_addfeaton = 1 # to get the model estimation on whole data set 
+outer_cv_addfeaton = 0 # Ha only, i.e. MRI
+noout_cv_addfeaton = 0 # to get the model estimation on whole data set 
 
 # control model
 outer_cv_c_model = 0 # baseline model for classification; predict with covariate only
 
 # report
-do_report_feat_only = 0
+do_report_feat_only = 1
 
 # number of runs to get the CV results distribution, >=1000 recommended
 # runs also will be the name of the results folder
 # 1000: fMRI against control model (control is baseline model, i.e. some control variable)
-runs = 1
+runs = 1000
 
 # advanced settings for (other studies)leave as is) ===========================
 # Any reporting of p-values against null? Set to F if you do that in a separate script.

@@ -35,7 +35,7 @@ Making the ratings graph: is automatically done when running "R/select_study.R" 
 6)
 Ratings: statistical tests. Run the script "R/analyses/03_image_adequacy/ratings_analysis_for_paper.R". Check the instructions at the top of the script.
 
-6)
+7)
 The Matlab folder holds information on the sequences used for functional magnetic resonance imaging and also the SPM12 batch for preprocessing and the single subject model.
 
 

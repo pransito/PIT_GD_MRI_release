@@ -29,7 +29,7 @@ setwd(root_wd)
 
 ## PARAMETER SETTINGS =========================================================
 # which study to look at (Cohorts)?
-which_study = "MRI"
+which_study = "POSTPILOT_HCPG"
 
 ## FUNCTIONS ==================================================================
 getmode <- function(v) {

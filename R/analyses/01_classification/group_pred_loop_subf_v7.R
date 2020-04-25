@@ -9,7 +9,7 @@ agk.pred.group.CV = function(outer_CV,addfeat,add_cr_pp_fn,add_cr_ra_fn,des_seed
   #
   # add_cr_pp_ma: for addfeat, should peripheral-physiology be added?
   #
-  # add_cr_pp_ma: should ratings be added?
+  # add_cr_ra_ma: should ratings be added?
   # 
   # des_seed: a seed (some integer); keep constant to make results reproducible
   #

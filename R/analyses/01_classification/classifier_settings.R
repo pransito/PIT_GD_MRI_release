@@ -7,19 +7,35 @@
 # for a result (try runs = 10 for starters)
 
 ## WHAT TO RUN ================================================================
-# only MRI features
-outer_cv_addfeaton = 0 # Ha only, i.e. MRI
-noout_cv_addfeaton = 0 # to get the model estimation on whole data set 
+# just the behavioral parameter sets
+outer_cv_noaddfeat = F # with outer CV, getting generalization error, Ha
+noout_cv_noaddfeat = F # no outer CV, get complete model on whole sample
+
+# only MRI features (but cut for only cue reactivity (CR))
+outer_cv_addfeaton = T # Ha only, i.e. MRI only
+noout_cv_addfeaton = T # to get the model estimation on whole data set 
+
+# behavior plus MRI
+outer_cv_wiaddfeat = F # behavior plus physio, Ha (MRI)
+noout_cv_wiaddfeat = F # behavior plus physio, get complete model
 
 # control model
-outer_cv_c_model = 0 # baseline model for classification; predict with covariate only
+outer_cv_c_model = F # baseline model for classification; predict with covariate only
+
+# cut fmri data for cue reactivity (cr) only?
+cut_for_mri_cr_only = F # the fmri data will be cut for cr data only
 
 # report
-do_report_feat_only = 1
+do_report_feat_only = T
+do_report_with_added_feat = F
 
 # number of runs to get the CV results distribution, >=1000 recommended
 # runs also will be the name of the results folder
 # 1000: fMRI against control model (control is baseline model, i.e. some control variable)
+# 350: fMRI with behavioral features
+# 351: only behavioral features
+# 352: fMRI only CR
+# 353: behavioral plus fmri (only CR)
 runs = 1000
 
 # advanced settings for (other studies)leave as is) ===========================

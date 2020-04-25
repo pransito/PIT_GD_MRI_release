@@ -8,12 +8,12 @@
 rm(list=ls())
 root_wd  = paste0(dirname(rstudioapi::getSourceEditorContext()$path),'/analyses/')
 setwd(root_wd)
-load('.RData')
+load('data_mr.RData')
 
 # get the paths
-res      = agk.get.working.location()
-base_gd  = res$base_gd
-path_ghb = res$path_ghb
+res      = regexpr('GitHub',root_wd)
+path_ghb = substr(root_wd,1,res[1]+attributes(res)$'match.length'-1)
+path_ghb = path_ghb
 
 # get the original data_pdt from data_import.R
 data_pdt     = data_pdt_bcp
@@ -29,7 +29,8 @@ setwd(root_wd)
 
 ## PARAMETER SETTINGS =========================================================
 # which study to look at (Cohorts)?
-which_study = "POSTPILOT_HCPG"
+#which_study = "POSTPILOT_HCPG"
+which_study = "MRI"
 
 ## FUNCTIONS ==================================================================
 getmode <- function(v) {
@@ -220,7 +221,8 @@ noout_cv_wiaddfeat      = 0 # adding physio, get complete model
 
 # only peripheral-physiological / MRI / rating (all saved under "phys")
 outer_cv_addfeaton      = 0 # Ha only, i.e. physio/MRI  
-noout_cv_addfeaton      = 0 # to get the complete model 
+noout_cv_addfeaton      = 0 # to get the complete model
+cut_for_mri_cr_only     = 0 # cut frmi data for only cue reactivity features
 
 # control model
 outer_cv_c_model        = 0 # control model/null-model for classification; predict with covariate

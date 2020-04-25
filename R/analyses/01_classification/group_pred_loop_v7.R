@@ -31,7 +31,7 @@ agk.load.ifnot.install("R.matlab")
 agk.load.ifnot.install("gtools")
 agk.load.ifnot.install("plyr")
 agk.load.ifnot.install("ggplot2")
-agk.load.ifnot.install("rgl")
+#agk.load.ifnot.install("rgl")
 agk.load.ifnot.install("gridExtra")
 agk.load.ifnot.install("boot")
 agk.load.ifnot.install("simpleboot")
@@ -51,7 +51,7 @@ agk.load.ifnot.install('ptw')
 agk.load.ifnot.install('lmPerm')
 agk.load.ifnot.install('pROC')
 agk.load.ifnot.install('cvTools')
-agk.load.ifnot.install('matlib')
+#agk.load.ifnot.install('matlib')
 agk.load.ifnot.install('robust')
 agk.load.ifnot.install('e1071')
 agk.load.ifnot.install('compiler')
@@ -76,7 +76,7 @@ if (!init_run) {
 
 # PARAMETERS TO SET: General ==================================================
 # set some seed to ensure reproducability
-des_seed              = 7777 #6993
+des_seed              = 6993 #7788 #6993 #7777
 # run the models (for param extraction in exp)
 est_models            = 1
 # ridge regression binomial;
@@ -257,8 +257,15 @@ if (add_cr_pp_ma == T | add_cr_ra_ma == T) {
   stopifnot(all(row.names(featmod_coefs_bcp[[1]]) == row.names(feature_clusters_bcp[[2]])))
 }
 
+# just the behavioral parameter sets ==========================================
+if (outer_cv_noaddfeat) {
+  agk.pred.group.CV(outer_CV = T, addfeat = F, add_cr_pp_fn = F, add_cr_ra_fn = F, des_seed, fm = fm)
+}
+if (noout_cv_noaddfeat) {
+  agk.pred.group.CV(outer_CV = F, addfeat = F, add_cr_pp_fn = F, add_cr_ra_fn = F, des_seed, fm = fm)
+}
 
-# only MRI features  =========================================================
+# only MRI features  ==========================================================
 if (outer_cv_addfeaton | noout_cv_addfeaton) {stopifnot(add_cr_pp_ma | add_cr_ra_ma)}
 if (outer_cv_addfeaton) {
   agk.pred.group.CV(outer_CV = T,addfeat = T,add_cr_pp_ma,add_cr_ra_ma,des_seed,addfeat_only = T, fm = fm)
@@ -267,7 +274,16 @@ if (noout_cv_addfeaton) {
   agk.pred.group.CV(outer_CV = F,addfeat = T,add_cr_pp_ma,add_cr_ra_ma,des_seed,addfeat_only = T, fm = fm)
 }
 
-# OUTERCV, CONTROL MODEL =====================================================
+# behav and MRI features  =====================================================
+if (outer_cv_wiaddfeat | noout_cv_wiaddfeat) {stopifnot(add_cr_pp_ma | add_cr_ra_ma)}
+if (outer_cv_wiaddfeat) {
+  agk.pred.group.CV(outer_CV = T,addfeat = T, add_cr_pp_ma, add_cr_ra_ma, des_seed, addfeat_only = F, fm = fm)
+}
+if (noout_cv_wiaddfeat) {
+  agk.pred.group.CV(outer_CV = F,addfeat = T, add_cr_pp_ma, add_cr_ra_ma, des_seed, addfeat_only = F, fm = fm)
+}
+
+# OUTERCV, CONTROL MODEL ======================================================
 # the control model; intercept only, or only the control variables
 if (outer_cv_c_model) {
   agk.pred.group.CV(outer_CV = T,addfeat=F,add_cr_pp_fn = F,add_cr_ra_fn = F,des_seed,addfeat_only = F,c_mod = T, fm = fm)

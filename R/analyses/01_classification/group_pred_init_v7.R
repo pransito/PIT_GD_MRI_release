@@ -145,6 +145,15 @@ agk.group.pred.init = function() {
     # delete unneeded variables
     cr_agg_pp_m[names(cr_agg_pp_m)[grep('PPI_._',names(cr_agg_pp_m))]] = NULL
     cr_agg_pp = cr_agg_pp_m
+    
+    # filter for CR variables
+    if (cut_for_mri_cr_only) {
+      cr_vars = names(cr_agg_pp)[c(grep('^SS__grp01_noCov_Picgam_', names(cr_agg_pp)), grep('^SS__grp01_noCov_Picneg_', 
+                                   names(cr_agg_pp)), grep('^SS__grp01_noCov_Picpos_', names(cr_agg_pp)))]
+      cr_agg_pp = cr_agg_pp[cr_vars]
+      print('I cut for fMRI CR variables only:')
+      print(names(cr_agg_pp))
+    }
   }
   
   # cleaning cr_agg_pp

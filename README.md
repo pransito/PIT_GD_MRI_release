@@ -11,7 +11,7 @@ How to use
 Fork the whole repository or download the zip and put it into some working directory.
 The .RData file has all the data and functions you will need. Especially data_pdt (choice data) and dat_match (questionnaire, demographic data). You will need R (https://cran.r-project.org/bin/windows/base/) and Rstudio (https://www.rstudio.com/products/rstudio/#Desktop) for this. Both are freely available software.
 
-1)
+1)test
 Run the "R/select_study.R" script. It selects the Cohort (MRI) and initializes all the analyses. Do this before anything else. 
 
 Careful: The script "R/analyses/01_classification/group_pred_loop_v7.R" (called by "R/select_study.R") installs and loads many R packages (see in the beginning of that script). They are all useful and should not hurt your installation of R or bother your other code. However, revise the list before you run the code and decide

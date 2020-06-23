@@ -74,6 +74,19 @@ if (doFitGlmer & which_study == 'MRI') {
   modlae_cg  = glmer(accept_reject ~ (gain + loss + ed_abs)*HCPG + cat*HCPG + (gain + loss + ed_abs + cat |subject) + (gain + loss + ed_abs |stim)  + (gain + loss + ed_abs |cat),data = data_pdt,family = 'binomial',nAGQ = 0,control=cur_control)
 }
 
+anova(modlae_00, modlae_0g, modlae_c0, modlae_cg)
+
+## glmer models lae, no intercept (MRI study) =================================
+if (doFitGlmer & which_study == 'MRI') {
+  modlae_00ni  = glmer(accept_reject ~ (0 + gain + loss + ed_abs) + (0 + gain + loss + ed_abs|subject) + (0 + gain + loss + ed_abs |stim) + (0 + gain + loss + ed_abs |cat),data = data_pdt,family = 'binomial',nAGQ = 0,control=cur_control)
+  modlae_0gni  = glmer(accept_reject ~ (0 + gain + loss + ed_abs)*HCPG + (0 + gain + loss + ed_abs|subject) + (0 + gain + loss + ed_abs |stim) + (0 + gain + loss + ed_abs |cat),data = data_pdt,family = 'binomial',nAGQ = 0,control=cur_control)
+  
+  modlae_c0ni  = glmer(accept_reject ~ (0 + gain + loss + ed_abs) + cat + (0 + gain + loss + ed_abs + cat|subject) + (0 + gain + loss + ed_abs |stim) + (0 + gain + loss + ed_abs |cat),data = data_pdt,family = 'binomial',nAGQ = 0,control=cur_control)
+  modlae_cgni  = glmer(accept_reject ~ (0 + gain + loss + ed_abs)*HCPG + cat*HCPG + (0 + gain + loss + ed_abs + cat |subject) + (0 + gain + loss + ed_abs |stim)  + (0 + gain + loss + ed_abs |cat),data = data_pdt,family = 'binomial',nAGQ = 0,control=cur_control)
+}
+
+anova(modlae_00ni, modlae_0gni, modlae_c0ni, modlae_cgni)
+
 ## check model fit per subject
 cur_dp         = modla_cg@frame
 cur_dp$pred_00 = as.numeric(as.numeric(predict(modla_00) >= 0) == cur_dp$accept_reject)

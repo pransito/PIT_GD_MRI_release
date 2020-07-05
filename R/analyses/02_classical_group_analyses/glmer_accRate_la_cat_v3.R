@@ -83,9 +83,22 @@ if (doFitGlmer & which_study == 'MRI') {
   
   modlae_c0ni  = glmer(accept_reject ~ (0 + gain + loss + ed_abs) + cat + (0 + gain + loss + ed_abs + cat|subject) + (0 + gain + loss + ed_abs |stim) + (0 + gain + loss + ed_abs |cat),data = data_pdt,family = 'binomial',nAGQ = 0,control=cur_control)
   modlae_cgni  = glmer(accept_reject ~ (0 + gain + loss + ed_abs)*HCPG + cat*HCPG + (0 + gain + loss + ed_abs + cat |subject) + (0 + gain + loss + ed_abs |stim)  + (0 + gain + loss + ed_abs |cat),data = data_pdt,family = 'binomial',nAGQ = 0,control=cur_control)
+
+  modlae_c0ini  = glmer(accept_reject ~ (0 + gain + loss + ed_abs)*cat + (0 + (gain + loss + ed_abs)*cat | subject) + (0 + gain + loss + ed_abs |stim) + (0 + gain + loss + ed_abs |cat),data = data_pdt,family = 'binomial',nAGQ = 0,control=cur_control)
+  modlae_cginis  = glmer(accept_reject ~ (0 + gain + loss + ed_abs)*cat + (0 + gain + loss + ed_abs)*HCPG + cat*HCPG + (0 + (gain + loss + ed_abs)*cat |subject) + (0 + gain + loss + ed_abs |stim)  + (0 + gain + loss + ed_abs |cat),data = data_pdt,family = 'binomial',nAGQ = 0,control=cur_control)
+  modlae_cgini  = glmer(accept_reject ~ (0 + gain + loss + ed_abs)*cat*HCPG + cat*HCPG + (0 + (gain + loss + ed_abs)*cat |subject) + (0 + gain + loss + ed_abs |stim)  + (0 + gain + loss + ed_abs |cat),data = data_pdt,family = 'binomial',nAGQ = 0,control=cur_control)
 }
 
-anova(modlae_00ni, modlae_0gni, modlae_c0ni, modlae_cgni)
+anova(modlae_00ni, modlae_0gni, modlae_c0ni, modlae_cgni, modlae_c0ini, modlae_cginis, modlae_cgini)
+anova(modlae_c0ini, modlae_cgini)
+
+## dat_pdt negative EV
+data_pdt$ev_cur = data_pdt$gain_bcp*0.5 + data_pdt$loss_bcp*0.5
+data_pdt_negev = subset(data_pdt, ev_cur  < 0)
+
+lmnegev  = glmer(accept_reject ~ 1 + (1 |subject) + (1 | stim)  + (1 | cat),data = data_pdt_negev,family = 'binomial',nAGQ = 0,control=cur_control)
+lmnegevg  = glmer(accept_reject ~ HCPG + (1 |subject) + (1 | stim)  + (1 | cat),data = data_pdt_negev,family = 'binomial',nAGQ = 0,control=cur_control)
+anova(lmnegev, lmnegevg)
 
 ## check model fit per subject
 cur_dp         = modla_cg@frame

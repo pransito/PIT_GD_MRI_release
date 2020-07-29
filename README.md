@@ -1,4 +1,4 @@
-R Code for the PIT Gambling Disorder paper (MRI data)
+R Code for the PIT Gambling Disorder paper (MRI data)  [![DOI](https://zenodo.org/badge/DOI/10.5281/zenodo.3966387.svg)](https://doi.org/10.5281/zenodo.3966387)
 -----------------------------------------------------------
 
 Code for publication of "Neural correlates of cue-induced changes in decision-making distinguish subjects with gambling disorder from healthy controls"

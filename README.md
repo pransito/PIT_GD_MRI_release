@@ -2,7 +2,7 @@ R Code for the PIT Gambling Disorder paper (MRI data)
 -----------------------------------------------------------
 
 Code for publication of "Neural correlates of cue-induced changes in decision-making distinguish subjects with gambling disorder from healthy controls"
-by: Alexander Genauck (2019)
+by: Alexander Genauck (2020) (https://doi.org/10.1111/adb.12951, and older pre-prints here: https://www.biorxiv.org/content/10.1101/498725v2)
 
 
 How to use
